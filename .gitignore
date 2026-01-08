@@ -1,0 +1,26 @@
+# Binaries
+/admind
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Environments
+.env
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
