@@ -34,4 +34,4 @@ It provides a RESTful API for administrative operations such as tenant managemen
 
 ## License
 
-Apache-2.0
+MIT
