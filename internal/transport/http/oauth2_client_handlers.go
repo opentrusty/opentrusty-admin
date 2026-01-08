@@ -1,5 +1,5 @@
 // Copyright 2026 The OpenTrusty Authors
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 package http
 
