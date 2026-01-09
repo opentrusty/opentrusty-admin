@@ -36,6 +36,8 @@ import (
 	"github.com/opentrusty/opentrusty-core/user"
 )
 
+var version = "dev"
+
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -45,7 +47,7 @@ func main() {
 		log.Fatalf("failed to load configuration: %v", err)
 	}
 
-	slog.Info("starting admind (Admin Plane)")
+	slog.Info("starting admind (Admin Plane)", "version", version)
 
 	// 0. Connect to DB
 	db, err := postgres.Open(ctx, cfg.DatabaseURL)

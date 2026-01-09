@@ -26,6 +26,7 @@ jobs:
           GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o opentrusty-admin -ldflags "-X main.version=$VERSION" ./cmd/admind
 
       - name: Prepare Release Artifacts
+        id: prepare
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           DIR="opentrusty-admin"
@@ -45,14 +46,14 @@ jobs:
           
           # Archive
           tar -czf opentrusty-admin-$VERSION-linux-amd64.tar.gz $DIR
-          echo "ARTIFACT_NAME=opentrusty-admin-$VERSION-linux-amd64.tar.gz" >> $GITHUB_ENV
+          echo "artifact=opentrusty-admin-$VERSION-linux-amd64.tar.gz" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ env.ARTIFACT_NAME }}
+          files: ${{ steps.prepare.outputs.artifact }}
           draft: false
           prerelease: false
         env:
