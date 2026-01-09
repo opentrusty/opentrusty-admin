@@ -1,0 +1,19 @@
+[Unit]
+Description=OpenTrusty Administration Plane (Management API)
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=opentrusty
+Group=opentrusty
+WorkingDirectory=/var/lib/opentrusty
+EnvironmentFile=/etc/opentrusty/shared.env
+EnvironmentFile=/etc/opentrusty/admin.env
+ExecStart=/usr/local/bin/opentrusty-admin
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
