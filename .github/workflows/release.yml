@@ -31,7 +31,7 @@ jobs:
         id: prepare
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
-          DIR="opentrusty-admin"
+          DIR="opentrusty-admin-$VERSION"
           mkdir -p $DIR/systemd
           
           # Copy binary
