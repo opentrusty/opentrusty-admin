@@ -115,7 +115,7 @@ func main() {
 	router := transportHTTP.NewRouter(handler)
 
 	server := &http.Server{
-		Addr:    ":" + cfg.Port,
+		Addr:    cfg.Port,
 		Handler: router,
 	}
 
