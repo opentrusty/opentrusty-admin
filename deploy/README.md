@@ -27,7 +27,7 @@ This package contains the OpenTrusty Administration Plane (admind), which provid
 
 4. Start the service:
    ```bash
-   sudo systemctl enable --now opentrusty-admin
+   sudo systemctl enable --now opentrusty-admind
    ```
 
 ## Configuration
