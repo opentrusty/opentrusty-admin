@@ -4,7 +4,7 @@ This package contains the OpenTrusty Administration Plane (admind), which provid
 
 ## Package Contents
 
-- `opentrusty-admin`: The Go binary.
+- `opentrusty-admind`: The Go binary.
 - `install.sh`: Automated installer script.
 - `systemd/`: systemd unit files.
 - `.env.example`: Example environment variables.

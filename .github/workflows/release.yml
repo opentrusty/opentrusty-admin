@@ -25,7 +25,7 @@ jobs:
 
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
-          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o opentrusty-admin -ldflags "-X main.version=$VERSION" ./cmd/admind
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o opentrusty-admind -ldflags "-X main.version=$VERSION" ./cmd/admind
 
       - name: Prepare Release Artifacts
         id: prepare
@@ -35,7 +35,7 @@ jobs:
           mkdir -p $DIR/systemd
           
           # Copy binary
-          cp opentrusty-admin $DIR/
+          cp opentrusty-admind $DIR/
           
           # Copy deployment assets
           cp deploy/install.sh $DIR/
