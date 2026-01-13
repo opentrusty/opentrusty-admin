@@ -22,7 +22,6 @@ import (
 
 type Config struct {
 	Env              string
-	DatabaseURL      string
 	Port             string
 	LogLevel         string
 	IdentitySecret   string
@@ -34,12 +33,19 @@ type Config struct {
 	CookieSameSite   string
 	CookieDomain     string
 	CookieName       string
+
+	// Database discrete configuration
+	DBHost     string
+	DBPort     string
+	DBUser     string
+	DBPassword string
+	DBName     string
+	DBSSLMode  string
 }
 
 func Load() (*Config, error) {
 	c := &Config{
 		Env:              os.Getenv("OPENTRUSTY_ENV"),
-		DatabaseURL:      os.Getenv("OPENTRUSTY_DATABASE_URL"),
 		Port:             os.Getenv("OPENTRUSTY_ADMIN_LISTEN_ADDR"),
 		LogLevel:         os.Getenv("OPENTRUSTY_LOG_LEVEL"),
 		IdentitySecret:   os.Getenv("OPENTRUSTY_IDENTITY_SECRET"),
@@ -51,6 +57,13 @@ func Load() (*Config, error) {
 		CookieSameSite:   os.Getenv("OPENTRUSTY_COOKIE_SAMESITE"),
 		CookieDomain:     os.Getenv("OPENTRUSTY_COOKIE_DOMAIN"),
 		CookieName:       os.Getenv("OPENTRUSTY_COOKIE_NAME"),
+
+		DBHost:     os.Getenv("OPENTRUSTY_DB_HOST"),
+		DBPort:     os.Getenv("OPENTRUSTY_DB_PORT"),
+		DBUser:     os.Getenv("OPENTRUSTY_DB_USER"),
+		DBPassword: os.Getenv("OPENTRUSTY_DB_PASSWORD"),
+		DBName:     os.Getenv("OPENTRUSTY_DB_NAME"),
+		DBSSLMode:  os.Getenv("OPENTRUSTY_DB_SSLMODE"),
 	}
 
 	if c.Env == "" {
@@ -74,6 +87,14 @@ func Load() (*Config, error) {
 		c.CookieName = "ot_session_admin"
 	}
 
+	// Default DB Port and SSLMode if not specified
+	if c.DBPort == "" {
+		c.DBPort = "5432"
+	}
+	if c.DBSSLMode == "" {
+		c.DBSSLMode = "disable"
+	}
+
 	if err := c.Validate(); err != nil {
 		return nil, err
 	}
@@ -82,8 +103,9 @@ func Load() (*Config, error) {
 }
 
 func (c *Config) Validate() error {
-	if c.DatabaseURL == "" {
-		return fmt.Errorf("OPENTRUSTY_DATABASE_URL is required")
+	// Discrete fields must be provided
+	if c.DBHost == "" || c.DBUser == "" || c.DBName == "" {
+		return fmt.Errorf("database configuration is required (provide discrete OPENTRUSTY_DB_* variables)")
 	}
 	if c.IdentitySecret == "" {
 		return fmt.Errorf("OPENTRUSTY_IDENTITY_SECRET is required")

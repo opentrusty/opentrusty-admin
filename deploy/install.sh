@@ -65,25 +65,36 @@ mkdir -p "${DATA_DIR}"
 chown "${SERVICE_USER}:${SERVICE_USER}" "${DATA_DIR}"
 log_info "Data directory ${DATA_DIR}/ exists and owned by ${SERVICE_USER}."
 
-# 5. Install environment example (if not already present)
+# 5. Install environment config
 if [ -f "./.env.example" ]; then
-  if [ ! -f "${CONFIG_DIR}/${COMPONENT}.env" ]; then
-    cp "./.env.example" "${CONFIG_DIR}/${COMPONENT}.env"
-    chmod 600 "${CONFIG_DIR}/${COMPONENT}.env"
-    chown "${SERVICE_USER}:${SERVICE_USER}" "${CONFIG_DIR}/${COMPONENT}.env"
-    log_info "Installed example config to ${CONFIG_DIR}/${COMPONENT}.env"
-    log_warn "IMPORTANT: Edit ${CONFIG_DIR}/${COMPONENT}.env with production values!"
+  ENV_FILE="${CONFIG_DIR}/${COMPONENT}.env"
+  if [ ! -f "$ENV_FILE" ]; then
+    cp "./.env.example" "$ENV_FILE"
+    chmod 600 "$ENV_FILE"
+    chown "${SERVICE_USER}:${SERVICE_USER}" "$ENV_FILE"
+    log_info "Installed new config to $ENV_FILE"
+    log_warn "IMPORTANT: Edit $ENV_FILE with production values!"
   else
-    log_info "Config file ${CONFIG_DIR}/${COMPONENT}.env already exists. Skipping."
+    log_info "Config file $ENV_FILE already exists. Migrating new variables..."
+    # Migration logic: append variables from .env.example that are missing in .env
+    while IFS= read -r line || [[ -n "$line" ]]; do
+      # Skip comments and empty lines
+      [[ "$line" =~ ^[[:space:]]*# ]] && continue
+      [[ "$line" =~ ^[[:space:]]*$ ]] && continue
+      
+      VAR_NAME=$(echo "$line" | cut -d'=' -f1)
+      if ! grep -q "^${VAR_NAME}=" "$ENV_FILE"; then
+        echo "$line" >> "$ENV_FILE"
+        log_info "Migrated missing variable: $VAR_NAME"
+      fi
+    done < "./.env.example"
   fi
 fi
 
-# 6. Install shared environment (if exists and not already present)
-if [ -f "./shared.env" ] && [ ! -f "${CONFIG_DIR}/shared.env" ]; then
-  cp "./shared.env" "${CONFIG_DIR}/shared.env"
-  chmod 600 "${CONFIG_DIR}/shared.env"
-  chown "${SERVICE_USER}:${SERVICE_USER}" "${CONFIG_DIR}/shared.env"
-  log_info "Installed shared config to ${CONFIG_DIR}/shared.env"
+# 6. Legacy shared.env cleanup (no longer used in autonomous plane model)
+if [ -f "${CONFIG_DIR}/shared.env" ]; then
+  log_warn "Found legacy shared.env. OpenTrusty now uses autonomous plane configuration."
+  log_warn "Please ensure all required variables are in ${ENV_FILE}."
 fi
 
 # 7. Install systemd unit
@@ -93,7 +104,10 @@ if [ "$SKIP_SYSTEMD" != "true" ]; then
     log_info "Installed systemd unit to /etc/systemd/system/${SERVICE_NAME}.service"
     
     systemctl daemon-reload
-    log_info "systemd daemon reloaded."
+    if systemctl is-active --quiet "${SERVICE_NAME}"; then
+      systemctl restart "${SERVICE_NAME}"
+      log_info "Service ${SERVICE_NAME} restarted."
+    fi
   else
     log_warn "systemd unit not found. Skipping service installation."
   fi

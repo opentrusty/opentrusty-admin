@@ -50,7 +50,15 @@ func main() {
 	slog.Info("starting admind (Admin Plane)", "version", version)
 
 	// 0. Connect to DB
-	db, err := postgres.Open(ctx, cfg.DatabaseURL)
+	db, err := postgres.New(ctx, postgres.Config{
+		Host:     cfg.DBHost,
+		Port:     cfg.DBPort,
+		User:     cfg.DBUser,
+		Password: cfg.DBPassword,
+		Database: cfg.DBName,
+		SSLMode:  cfg.DBSSLMode,
+	})
+
 	if err != nil {
 		slog.Error("failed to connect to database", "error", err)
 		os.Exit(1)
