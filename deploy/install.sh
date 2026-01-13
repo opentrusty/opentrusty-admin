@@ -10,6 +10,7 @@ SERVICE_NAME="opentrusty-admind"
 CONFIG_DIR="/etc/opentrusty"
 DATA_DIR="/var/lib/opentrusty"
 SERVICE_USER="opentrusty"
+VERSION="dev"
 
 # Colors for output
 RED='\033[0;31m'
@@ -64,6 +65,10 @@ log_info "Config directory ${CONFIG_DIR}/ exists."
 mkdir -p "${DATA_DIR}"
 chown "${SERVICE_USER}:${SERVICE_USER}" "${DATA_DIR}"
 log_info "Data directory ${DATA_DIR}/ exists and owned by ${SERVICE_USER}."
+
+# 4. Create version file
+echo "$VERSION" > "${CONFIG_DIR}/${COMPONENT}.version"
+log_info "Recorded version $VERSION in ${CONFIG_DIR}/${COMPONENT}.version"
 
 # 5. Install environment config
 if [ -f "./.env.example" ]; then
