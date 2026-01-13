@@ -16,7 +16,7 @@ help:
 	@echo "  make clean       - Clean build artifacts"
 
 build:
-	go build -o $(BINARY_NAME) $(MAIN_PATH)
+	go build -ldflags "-X main.version=$(VERSION)" -o $(BINARY_NAME) $(MAIN_PATH)
 
 deps:
 	go mod download
@@ -50,6 +50,7 @@ release: build
 	@mkdir -p $(RELEASE_DIR)
 	@cp $(BINARY_NAME) $(RELEASE_DIR)/
 	@cp -r deploy/* $(RELEASE_DIR)/
+	@sed -i "s/VERSION=\"dev\"/VERSION=\"$(VERSION)\"/" $(RELEASE_DIR)/install.sh
 	@cp .env.example $(RELEASE_DIR)/
 	@cp LICENSE $(RELEASE_DIR)/ 2>/dev/null || echo "No LICENSE file found"
 	@cd release && tar -czf opentrusty-admin-$(VERSION)-linux-amd64.tar.gz opentrusty-admin-$(VERSION)

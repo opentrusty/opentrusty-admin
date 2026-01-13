@@ -39,6 +39,7 @@ jobs:
           
           # Copy deployment assets
           cp deploy/install.sh $DIR/
+          sed -i "s/VERSION=\"dev\"/VERSION=\"$VERSION\"/" $DIR/install.sh
           cp deploy/README.md $DIR/
           cp deploy/systemd/*.service $DIR/systemd/
           cp .env.example $DIR/
