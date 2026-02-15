@@ -50,7 +50,7 @@ release: build
 	@mkdir -p $(RELEASE_DIR)
 	@cp $(BINARY_NAME) $(RELEASE_DIR)/
 	@cp -r deploy/* $(RELEASE_DIR)/
-	@sed -i "s/VERSION=\"dev\"/VERSION=\"$(VERSION)\"/" $(RELEASE_DIR)/install.sh
+	@sed "s/VERSION=\"dev\"/VERSION=\"$(VERSION)\"/" $(RELEASE_DIR)/install.sh > $(RELEASE_DIR)/install.sh.tmp && mv $(RELEASE_DIR)/install.sh.tmp $(RELEASE_DIR)/install.sh
 	@cp .env.example $(RELEASE_DIR)/
 	@cp LICENSE $(RELEASE_DIR)/ 2>/dev/null || echo "No LICENSE file found"
 	@cd release && tar -czf opentrusty-admin-$(VERSION)-linux-amd64.tar.gz opentrusty-admin-$(VERSION)

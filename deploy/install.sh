@@ -96,10 +96,10 @@ if [ -f "./.env.example" ]; then
   fi
 fi
 
-# 6. Legacy shared.env cleanup (no longer used in autonomous plane model)
+# 6. Legacy shared.env cleanup (no longer used — per-binary env model)
 if [ -f "${CONFIG_DIR}/shared.env" ]; then
-  log_warn "Found legacy shared.env. OpenTrusty now uses autonomous plane configuration."
-  log_warn "Please ensure all required variables are in ${ENV_FILE}."
+  log_warn "Found legacy shared.env. OpenTrusty now uses per-binary configuration."
+  log_warn "Please migrate all required variables to ${ENV_FILE} and remove shared.env."
 fi
 
 # 7. Install systemd unit
@@ -125,9 +125,10 @@ echo "============================================"
 echo ""
 echo "Next steps:"
 echo "1. Edit ${CONFIG_DIR}/${COMPONENT}.env with production values"
-echo "   - Set OPENTRUSTY_DATABASE_URL"
-echo "   - Set OPENTRUSTY_SESSION_SECRET (64-byte hex)"
-echo "   - Set OPENTRUSTY_IDENTITY_SECRET (32-byte hex)"
+echo "   - Set OPENTRUSTY_DB_HOST, OPENTRUSTY_DB_USER, OPENTRUSTY_DB_PASSWORD, OPENTRUSTY_DB_NAME"
+echo "   - Set OPENTRUSTY_DB_SSLMODE=require (for production)"
+echo "   - Set OPENTRUSTY_SESSION_SECRET (generate: openssl rand -hex 32)"
+echo "   - Set OPENTRUSTY_IDENTITY_SECRET (generate: openssl rand -hex 32)"
 echo ""
 if [ "$SKIP_SYSTEMD" != "true" ]; then
   echo "2. Start the service:"
