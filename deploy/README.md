@@ -23,7 +23,7 @@ This package contains the OpenTrusty Administration Plane (admind), which provid
    sudo ./install.sh
    ```
 
-3. Configure environment variables in `/etc/opentrusty/admin.env` and `/etc/opentrusty/shared.env`.
+3. Configure environment variables in `/etc/opentrusty/admin.env`.
 
 4. Start the service:
    ```bash
@@ -33,3 +33,5 @@ This package contains the OpenTrusty Administration Plane (admind), which provid
 ## Configuration
 
 The Admin Plane requires connection to the OpenTrusty PostgreSQL database. Refer to `.env.example` for detailed variable descriptions.
+
+Detailed deployment instructions for the entire platform are available in the [OpenTrusty Deployment Guide](https://github.com/opentrusty/opentrusty-cli/blob/main/DEPLOYMENT.md).
