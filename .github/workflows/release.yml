@@ -7,10 +7,8 @@ on:
 
 jobs:
   build:
-    name: Build and Release
+    name: Build Artifacts
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     strategy:
       matrix:
         goos: [linux]
@@ -55,12 +53,31 @@ jobs:
           tar -czf "$ARTIFACT" $DIR
           echo "artifact=$ARTIFACT" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
         with:
-          files: ${{ steps.prepare.outputs.artifact }}
+          name: opentrusty-admin-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: ${{ steps.prepare.outputs.artifact }}
+          retention-days: 1
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: opentrusty-admin-*
+          merge-multiple: true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*.tar.gz
           draft: false
           prerelease: false
         env:
