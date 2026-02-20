@@ -54,6 +54,12 @@ if [ -f "/usr/local/bin/${BINARY_NAME}" ]; then
   log_info "Removed binary /usr/local/bin/${BINARY_NAME}"
 fi
 
+# Remove version file unconditionally
+if [ -f "${CONFIG_DIR}/${COMPONENT}.version" ]; then
+  rm -f "${CONFIG_DIR}/${COMPONENT}.version"
+  log_info "Removed version record ${CONFIG_DIR}/${COMPONENT}.version"
+fi
+
 # 4. Optional: Remove config and data
 REMOVE_ALL="n"
 if [ "$INTERACTIVE" = true ] && [ "$FORCE_REMOVE" = false ]; then
@@ -68,9 +74,16 @@ if [[ "$REMOVE_ALL" =~ ^[Yy]$ ]]; then
   rm -f "${CONFIG_DIR}/${COMPONENT}.env"
   log_info "Removed ${CONFIG_DIR}/${COMPONENT}.env"
   
-  # Remove data directory
-  rm -rf "${DATA_DIR}"
-  log_info "Removed data directory ${DATA_DIR}"
+  # Safe removal of shared data directory
+  # Only remove if no other OpenTrusty .version files exist (meaning no other components are installed)
+  if [ -d "${CONFIG_DIR}" ] && ! ls "${CONFIG_DIR}"/*.version >/dev/null 2>&1; then
+    if [ -d "${DATA_DIR}" ]; then
+      rm -rf "${DATA_DIR}"
+      log_info "Removed data directory ${DATA_DIR}"
+    fi
+  else
+    log_info "Preserved shared data directory ${DATA_DIR} (other components still installed)"
+  fi
   
   # Check if config directory is empty, if so remove it
   if [ -d "${CONFIG_DIR}" ] && [ -z "$(ls -A ${CONFIG_DIR})" ]; then
