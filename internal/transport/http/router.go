@@ -26,8 +26,15 @@ import (
 )
 
 // NewRouter creates the Admin Plane router.
-func NewRouter(h *Handler) *chi.Mux {
+func NewRouter(h *Handler, corsOrigins []string) *chi.Mux {
 	r := chi.NewRouter()
+
+	// CORS must be first to handle OPTIONS preflight before other middleware
+	if len(corsOrigins) > 0 {
+		r.Use(middleware.CORS(middleware.CORSConfig{
+			AllowedOrigins: corsOrigins,
+		}))
+	}
 
 	// Middleware
 	r.Use(chiMiddleware.RequestID)

@@ -125,7 +125,7 @@ func main() {
 		config.DecodeSecret(cfg.SessionSecret),
 	)
 
-	router := transportHTTP.NewRouter(handler)
+	router := transportHTTP.NewRouter(handler, cfg.CORSAllowedOrigins)
 
 	server := &http.Server{
 		Addr:    cfg.Port,

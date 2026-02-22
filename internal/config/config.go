@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type Config struct {
@@ -33,6 +34,9 @@ type Config struct {
 	CookieSameSite   string
 	CookieDomain     string
 	CookieName       string
+
+	// CORS
+	CORSAllowedOrigins []string
 
 	// Database discrete configuration
 	DBHost     string
@@ -64,6 +68,16 @@ func Load() (*Config, error) {
 		DBPassword: os.Getenv("OPENTRUSTY_DB_PASSWORD"),
 		DBName:     os.Getenv("OPENTRUSTY_DB_NAME"),
 		DBSSLMode:  os.Getenv("OPENTRUSTY_DB_SSLMODE"),
+	}
+
+	// Parse comma-separated CORS origins
+	if origins := os.Getenv("OPENTRUSTY_CORS_ALLOWED_ORIGINS"); origins != "" {
+		for _, o := range strings.Split(origins, ",") {
+			trimmed := strings.TrimSpace(o)
+			if trimmed != "" {
+				c.CORSAllowedOrigins = append(c.CORSAllowedOrigins, trimmed)
+			}
+		}
 	}
 
 	if c.Env == "" {
