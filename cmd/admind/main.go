@@ -76,7 +76,7 @@ func main() {
 
 	userRepo := postgres.NewUserRepository(db)
 	hasher := user.NewPasswordHasher(65536, 1, 1, 16, 32)
-	userService := user.NewService(userRepo, hasher, auditLogger, 5, 15*time.Minute, cfg.IdentitySecret)
+	userService := user.NewService(userRepo, hasher, auditLogger, 5, 15*time.Minute, string(config.DecodeSecret(cfg.IdentitySecret)))
 
 	sessionRepo := postgres.NewSessionRepository(db)
 	sessionService := session.NewService(sessionRepo, 24*time.Hour, 1*time.Hour)
@@ -122,7 +122,7 @@ func main() {
 			CookieSameSite: cfg.GetSameSite(),
 		},
 
-		[]byte(cfg.SessionSecret),
+		config.DecodeSecret(cfg.SessionSecret),
 	)
 
 	router := transportHTTP.NewRouter(handler)
