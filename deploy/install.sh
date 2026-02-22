@@ -48,7 +48,13 @@ else
   log_info "Created service user '${SERVICE_USER}'."
 fi
 
-# 3. Copy binary
+# 3. Stop running service before binary replacement (prevents "Text file busy")
+if [ "$SKIP_SYSTEMD" != "true" ] && systemctl is-active --quiet "${SERVICE_NAME}" 2>/dev/null; then
+  systemctl stop "${SERVICE_NAME}"
+  log_info "Stopped running ${SERVICE_NAME} for upgrade."
+fi
+
+# 4. Copy binary
 if [ -f "./${BINARY_NAME}" ]; then
   cp "./${BINARY_NAME}" /usr/local/bin/
   chmod +x /usr/local/bin/${BINARY_NAME}
